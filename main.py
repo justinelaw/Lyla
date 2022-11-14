@@ -18,6 +18,7 @@ bot = commands.Bot(command_prefix='!', intents = intents)
 async def on_ready():
         print('Logged on as {0}'.format(bot.user))
         await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="Pied Piper by BTS"))
+  
 @bot.event
 async def on_message(message):
     print('Message from {0.author}: {0.content}'.format(message))
@@ -29,15 +30,24 @@ async def test(ctx):
     await ctx.send(text)
 
 #note: for future music category/cog
-@bot.command(name='join', help='Bot will join the voice channel')
+@bot.command(name='join', help='Bot will join the current voice channel')
 async def join(ctx):
     if not ctx.message.author.voice:
-        await ctx.send("{} is not connected to a voice channel".format(ctx.message.author.name))
+        await ctx.send("{} is currently not in a voice channel".format(ctx.message.author.name))
         return
     else:
         channel = ctx.message.author.voice.channel
-    await channel.connect()
+        await channel.connect()
 
+@bot.command(name= 'leave', help= 'Bot will leave the current voice channel')
+async def leave(ctx):
+    if not ctx.message.author.voice:
+      await ctx.send("{} is currently not in a voice channel".format(ctx.message.author.name))
+      return
+    else:
+      client = ctx.voice_client
+      await client.disconnect(force=True)
+      
 
 @bot.command(name= 'info', help= 'Shows server information and statistics')
 async def info(ctx):
@@ -55,7 +65,6 @@ async def info(ctx):
     embed.add_field(name = 'Server ID: ', value = serverID, inline = True )
 
     await ctx.send(embed=embed)
-
 
 
 bot.run(TOKEN)
