@@ -33,7 +33,7 @@ async def test(ctx):
 @bot.command(name='join', help='Bot will join the current voice channel')
 async def join(ctx):
     if not ctx.message.author.voice:
-        await ctx.send("{} is currently not in a voice channel".format(ctx.message.author.name))
+        await ctx.send("{0.author} is currently not in a voice channel".format(ctx.message))
         return
     else:
         channel = ctx.message.author.voice.channel
@@ -41,12 +41,16 @@ async def join(ctx):
 
 @bot.command(name= 'leave', help= 'Bot will leave the current voice channel')
 async def leave(ctx):
-    if not ctx.message.author.voice:
-      await ctx.send("{} is currently not in a voice channel".format(ctx.message.author.name))
+    if not ctx.voice_client:
+      await ctx.send("Lyla is not connected to a voice channel")
       return
     else:
-      client = ctx.voice_client
-      await client.disconnect(force=True)
+      if not ctx.message.author.voice:
+        await ctx.send("{0.author} is currently not in a voice channel".format(ctx.message))
+        return 
+      else: 
+        client = ctx.voice_client
+        await client.disconnect(force=True)
       
 
 @bot.command(name= 'info', help= 'Shows server information and statistics')
